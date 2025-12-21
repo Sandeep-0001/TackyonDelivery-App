@@ -4,14 +4,27 @@ import User from '../models/userModel';
 
 const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID || '';
 const GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET || '';
-const BACKEND_URL = process.env.BACKEND_URL || 'http://localhost:3001';
+
+function normalizeBaseUrl(url: string): string {
+  return url.trim().replace(/\/+$/, '');
+}
+
+const BACKEND_BASE_URL = normalizeBaseUrl(
+  process.env.BACKEND_URL ||
+  process.env.RENDER_EXTERNAL_URL ||
+  'http://localhost:3001'
+);
+
+const GOOGLE_CALLBACK_URL = (process.env.GOOGLE_CALLBACK_URL && process.env.GOOGLE_CALLBACK_URL.trim())
+  ? process.env.GOOGLE_CALLBACK_URL.trim()
+  : `${BACKEND_BASE_URL}/api/auth/google/callback`;
 
 passport.use(
   new GoogleStrategy(
     {
       clientID: GOOGLE_CLIENT_ID,
       clientSecret: GOOGLE_CLIENT_SECRET,
-      callbackURL: `${BACKEND_URL}/api/auth/google/callback`,
+      callbackURL: GOOGLE_CALLBACK_URL,
     },
     async (accessToken, refreshToken, profile, done) => {
       try {
