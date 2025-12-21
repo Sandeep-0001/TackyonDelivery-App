@@ -82,6 +82,6 @@ mongoose.connect(MONGO_URI) //  removed old options
       startWakeupLoop();
     });
   })
-  .catch(err => {
+  .catch((err: unknown) => {
     console.error('Database connection error:', err);
   });

@@ -1,11 +1,11 @@
 import express from 'express';
-import bodyParser from 'body-parser';
 import cors from 'cors';
 import session from 'express-session';
 import passport from './src/config/passport';
 import orderRoutes from './src/routes/orderRoutes';
 import routeRoutes from './src/routes/routesRoutes';
 import authRoutes from './src/routes/authRoutes';
+import type { Request, Response } from 'express';
 
 const app = express();
 
@@ -21,7 +21,7 @@ const corsOptions: cors.CorsOptions = {
 app.use(cors(corsOptions));
 app.options('*', cors(corsOptions));
 
-app.use(bodyParser.json());
+app.use(express.json());
 
 // Session configuration for passport
 app.use(session({
@@ -38,7 +38,7 @@ app.use(session({
 app.use(passport.initialize());
 app.use(passport.session());
 
-app.get('/health', (_req, res) => {
+app.get('/health', (_req: Request, res: Response) => {
   res.status(200).json({
     status: 'ok',
     uptimeSeconds: Math.floor(process.uptime()),
