@@ -38,6 +38,14 @@ app.use(session({
 app.use(passport.initialize());
 app.use(passport.session());
 
+app.get('/health', (_req, res) => {
+  res.status(200).json({
+    status: 'ok',
+    uptimeSeconds: Math.floor(process.uptime()),
+    timestamp: new Date().toISOString(),
+  });
+});
+
 app.use('/api/auth', authRoutes);
 app.use('/api/orders', orderRoutes);
 app.use('/api/routes', routeRoutes);
