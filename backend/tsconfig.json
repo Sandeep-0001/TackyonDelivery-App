@@ -1,0 +1,15 @@
+{
+  "compilerOptions": {
+    "target": "ES2020",                /* Use a modern JS version */
+    "module": "commonjs",              /* Node.js friendly */
+    "rootDir": "./src",                /* Where your TS source files live */
+    "outDir": "./dist",                /* Where compiled JS will go */
+    "esModuleInterop": true,           
+    "forceConsistentCasingInFileNames": true,
+    "strict": true,                    
+    "skipLibCheck": true,              /* Ignore type errors inside node_modules */
+    "resolveJsonModule": true          /* Allow importing JSON files */
+  },
+  "include": ["src"],                  /* Only compile files from /src */
+  "exclude": ["node_modules", "dist"]  /* Don’t compile dependencies or build output */
+}
