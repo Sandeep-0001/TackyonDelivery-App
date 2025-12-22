@@ -226,6 +226,9 @@ export const sendEmailOtp = async (req: Request, res: Response) => {
         <p>If you did not request this, you can ignore this email.</p>
       </div>
     `;
+
+    // IMPORTANT: In production, misconfigured/blocked SMTP can hang for a long time.
+    // `sendEmail` now has a hard timeout to ensure this request doesn't remain "pending".
     await sendEmail(normalizedEmail, subject, html);
 
     res.status(200).json({ message: 'OTP sent to email' });
