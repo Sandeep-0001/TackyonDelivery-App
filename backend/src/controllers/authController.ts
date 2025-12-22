@@ -187,7 +187,6 @@ export const googleCallback = async (req: Request, res: Response) => {
     res.redirect(`${FRONTEND_URL}/signin?error=server_error`);
   }
 };
-
 // Send Email OTP
 export const sendEmailOtp = async (req: Request, res: Response) => {
   try {
@@ -245,12 +244,27 @@ export const sendEmailOtp = async (req: Request, res: Response) => {
     }
 
     const isProd = (process.env.NODE_ENV || 'development') === 'production';
-    const safeError = (error && typeof error === 'object' && 'message' in (error as any))
-      ? String((error as any).message)
+    const errAny = error as any;
+    const safeError = (errAny && typeof errAny === 'object' && 'message' in errAny)
+      ? String(errAny.message)
       : undefined;
+
+    const errorType = (() => {
+      const code = String(errAny?.code || '').toUpperCase();
+      const msg = String(errAny?.message || '').toLowerCase();
+
+      if (code.includes('SMTP_NOT_CONFIGURED')) return 'SMTP_NOT_CONFIGURED';
+      if (code.includes('EAUTH')) return 'SMTP_AUTH_FAILED';
+      if (code.includes('ECONNECTION') || code.includes('ESOCKET')) return 'SMTP_CONNECTION_FAILED';
+      if (code.includes('ETIMEDOUT') || code.includes('SMTP_TIMEOUT') || msg.includes('timed out')) return 'SMTP_TIMEOUT';
+      if (code.includes('EENVELOPE')) return 'SMTP_ENVELOPE_REJECTED';
+
+      return 'SMTP_SEND_FAILED';
+    })();
 
     res.status(500).json({
       message: 'Failed to send OTP email',
+      errorType,
       ...(isProd ? {} : { error: safeError }),
     });
   }

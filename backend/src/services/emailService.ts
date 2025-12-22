@@ -25,6 +25,16 @@ if (!SMTP_HOST || !SMTP_USER || !SMTP_PASS) {
   console.warn('SMTP configuration is incomplete. Check SMTP_HOST, SMTP_USER and SMTP_PASS in your .env');
 }
 
+console.log('SMTP config:', {
+  host: SMTP_HOST || '(missing)',
+  port: SMTP_PORT,
+  secure: SMTP_SECURE,
+  requireTLS: SMTP_REQUIRE_TLS,
+  timeoutMs: SMTP_TIMEOUT_MS,
+  tlsRejectUnauthorized: SMTP_TLS_REJECT_UNAUTHORIZED,
+  mailFromConfigured: Boolean(MAIL_FROM),
+});
+
 const transporter = nodemailer.createTransport({
   host: SMTP_HOST,
   port: SMTP_PORT,
@@ -43,7 +53,11 @@ const transporter = nodemailer.createTransport({
 function withTimeout<T>(promise: Promise<T>, ms: number, label: string): Promise<T> {
   let timer: NodeJS.Timeout | undefined;
   const timeoutPromise = new Promise<T>((_, reject) => {
-    timer = setTimeout(() => reject(new Error(`${label} timed out after ${ms}ms`)), ms);
+    timer = setTimeout(() => {
+      const timeoutError: any = new Error(`${label} timed out after ${ms}ms`);
+      timeoutError.code = 'SMTP_TIMEOUT';
+      reject(timeoutError);
+    }, ms);
   });
 
   return Promise.race([promise, timeoutPromise]).finally(() => {
@@ -65,6 +79,12 @@ withTimeout(transporter.verify(), Math.min(8000, SMTP_TIMEOUT_MS), 'SMTP verify'
 export async function sendEmail(to: string, subject: string, html: string) {
   const from = MAIL_FROM;
   try {
+    if (!SMTP_HOST || !SMTP_USER || !SMTP_PASS) {
+      const configError: any = new Error('SMTP is not configured. Missing SMTP_HOST/SMTP_USER/SMTP_PASS');
+      configError.code = 'SMTP_NOT_CONFIGURED';
+      throw configError;
+    }
+
     const info = await withTimeout(
       transporter.sendMail({ from, to, subject, html }),
       SMTP_TIMEOUT_MS,
@@ -73,7 +93,18 @@ export async function sendEmail(to: string, subject: string, html: string) {
     return info;
   } catch (err: any) {
     // Re-throw after logging so callers (controllers) can return a friendly error
-    console.error('sendEmail failed:', err && err.message ? err.message : err);
+    const safe = {
+      message: err?.message,
+      code: err?.code,
+      command: err?.command,
+      responseCode: err?.responseCode,
+      errno: err?.errno,
+      syscall: err?.syscall,
+      address: err?.address,
+      port: err?.port,
+      hostname: err?.hostname,
+    };
+    console.error('sendEmail failed:', safe);
     throw err;
   }
 }
