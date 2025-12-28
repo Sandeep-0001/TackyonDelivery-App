@@ -69,258 +69,123 @@ const SignUp: React.FC = () => {
   };
 
   return (
-    <div style={{
-      minHeight: '100vh',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-      padding: '20px'
-    }}>
-      <div style={{
-        backgroundColor: 'white',
-        borderRadius: '12px',
-        boxShadow: '0 10px 40px rgba(0, 0, 0, 0.2)',
-        padding: '40px',
-        width: '100%',
-        maxWidth: '450px'
-      }}>
-        <h1 style={{
-          textAlign: 'center',
-          color: '#333',
-          marginBottom: '10px',
-          fontSize: '2rem'
-        }}>
-          Create Account
-        </h1>
-        <p style={{
-          textAlign: 'center',
-          color: '#666',
-          marginBottom: '30px'
-        }}>
-          Sign up for RouteOptimizer
-        </p>
-
-        {error && (
-          <div style={{
-            backgroundColor: '#fee',
-            color: '#c33',
-            padding: '12px',
-            borderRadius: '6px',
-            marginBottom: '20px',
-            border: '1px solid #fcc'
-          }}>
-            {error}
-          </div>
-        )}
-
-        <form onSubmit={handleSubmit}>
-          <div style={{ marginBottom: '20px' }}>
-            <label style={{
-              display: 'block',
-              marginBottom: '8px',
-              color: '#333',
-              fontWeight: '500'
-            }}>
-              Full Name
-            </label>
-            <input
-              type="text"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              required
-              style={{
-                width: '100%',
-                padding: '12px',
-                border: '1px solid #ddd',
-                borderRadius: '6px',
-                fontSize: '1rem',
-                boxSizing: 'border-box'
-              }}
-              placeholder="Enter your full name"
+    <div className="auth-bg">
+      <div className="auth-card">
+        <div className="auth-card-body">
+          <div className="text-center">
+            <img
+              src="/logo.png"
+              alt="Company logo"
+              className="mx-auto h-11 w-11 rounded-2xl bg-white object-contain shadow-sm"
             />
+            <h1 className="mt-4 text-2xl font-semibold tracking-tight text-slate-900">Create account</h1>
+            <p className="mt-2 text-sm text-slate-600">Sign up for RouteOptimizer</p>
           </div>
 
-          <div style={{ marginBottom: '20px' }}>
-            <label style={{
-              display: 'block',
-              marginBottom: '8px',
-              color: '#333',
-              fontWeight: '500'
-            }}>
-              Email
-            </label>
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-              style={{
-                width: '100%',
-                padding: '12px',
-                border: '1px solid #ddd',
-                borderRadius: '6px',
-                fontSize: '1rem',
-                boxSizing: 'border-box'
-              }}
-              placeholder="Enter your email"
-            />
-          </div>
-
-          <div style={{ display: 'flex', gap: '10px', marginBottom: '12px' }}>
-            <button
-              type="button"
-              onClick={handleSendOtp}
-              disabled={!email || sending}
-              style={{
-                padding: '10px 14px',
-                backgroundColor: sending ? '#999' : '#667eea',
-                color: 'white',
-                border: 'none',
-                borderRadius: '6px',
-                fontWeight: 600,
-                cursor: sending ? 'not-allowed' : 'pointer'
-              }}
-            >
-              {sending ? 'Sending...' : 'Send OTP'}
-            </button>
-            <input
-              type="text"
-              value={code}
-              onChange={(e) => setCode(e.target.value)}
-              placeholder="Enter OTP"
-              maxLength={6}
-              style={{
-                flex: 1,
-                padding: '12px',
-                border: '1px solid #ddd',
-                borderRadius: '6px',
-                fontSize: '1rem',
-                boxSizing: 'border-box'
-              }}
-            />
-          </div>
-          {otpStatus && (
-            <div style={{
-              backgroundColor: '#eef6ff',
-              color: '#1e60d1',
-              padding: '10px',
-              borderRadius: '6px',
-              marginBottom: '12px',
-              border: '1px solid #cfe2ff'
-            }}>
-              {otpStatus}
+          {error && (
+            <div className="mt-6 rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-800">
+              {error}
             </div>
           )}
 
-          <div style={{ marginBottom: '20px' }}>
-            <label style={{
-              display: 'block',
-              marginBottom: '8px',
-              color: '#333',
-              fontWeight: '500'
-            }}>
-              Password
-            </label>
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-              style={{
-                width: '100%',
-                padding: '12px',
-                border: '1px solid #ddd',
-                borderRadius: '6px',
-                fontSize: '1rem',
-                boxSizing: 'border-box'
-              }}
-              placeholder="At least 6 characters"
-            />
+          <form onSubmit={handleSubmit} className="mt-6 space-y-4">
+            <div>
+              <label className="label">Full name</label>
+              <input
+                type="text"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                required
+                className="input"
+                placeholder="Enter your full name"
+                autoComplete="name"
+              />
+            </div>
+
+            <div>
+              <label className="label">Email</label>
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+                className="input"
+                placeholder="Enter your email"
+                autoComplete="email"
+              />
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+              <button
+                type="button"
+                onClick={handleSendOtp}
+                disabled={!email || sending}
+                className="btn btn-outline w-full sm:col-span-1"
+              >
+                {sending ? 'Sending…' : 'Send OTP'}
+              </button>
+              <input
+                type="text"
+                value={code}
+                onChange={(e) => setCode(e.target.value)}
+                placeholder="Enter OTP"
+                maxLength={6}
+                className="input sm:col-span-2"
+                inputMode="numeric"
+              />
+            </div>
+
+            {otpStatus && (
+              <div className="rounded-xl border border-sky-200 bg-sky-50 px-4 py-3 text-sm text-sky-800">
+                {otpStatus}
+              </div>
+            )}
+
+            <div>
+              <label className="label">Password</label>
+              <input
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+                className="input"
+                placeholder="At least 6 characters"
+                autoComplete="new-password"
+              />
+            </div>
+
+            <div>
+              <label className="label">Confirm password</label>
+              <input
+                type="password"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                required
+                className="input"
+                placeholder="Confirm your password"
+                autoComplete="new-password"
+              />
+            </div>
+
+            <button type="submit" disabled={loading} className="btn btn-primary w-full py-3">
+              {loading ? 'Creating account…' : 'Sign up'}
+            </button>
+          </form>
+
+          <div className="my-6 flex items-center gap-3">
+            <div className="h-px flex-1 bg-slate-200" />
+            <div className="text-xs font-medium text-slate-500">OR</div>
+            <div className="h-px flex-1 bg-slate-200" />
           </div>
 
-          <div style={{ marginBottom: '25px' }}>
-            <label style={{
-              display: 'block',
-              marginBottom: '8px',
-              color: '#333',
-              fontWeight: '500'
-            }}>
-              Confirm Password
-            </label>
-            <input
-              type="password"
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-              required
-              style={{
-                width: '100%',
-                padding: '12px',
-                border: '1px solid #ddd',
-                borderRadius: '6px',
-                fontSize: '1rem',
-                boxSizing: 'border-box'
-              }}
-              placeholder="Confirm your password"
-            />
+          <GoogleSignInButton />
+
+          <div className="mt-6 text-center text-sm text-slate-600">
+            Already have an account?{' '}
+            <Link to="/signin" className="font-semibold text-brand-primary-700 hover:text-brand-primary-800">
+              Sign in
+            </Link>
           </div>
-
-          <button
-            type="submit"
-            disabled={loading}
-            style={{
-              width: '100%',
-              padding: '14px',
-              backgroundColor: loading ? '#999' : '#667eea',
-              color: 'white',
-              border: 'none',
-              borderRadius: '6px',
-              fontSize: '1rem',
-              fontWeight: '600',
-              cursor: loading ? 'not-allowed' : 'pointer',
-              transition: 'background-color 0.3s',
-              marginBottom: '20px'
-            }}
-            onMouseEnter={(e) => {
-              if (!loading) e.currentTarget.style.backgroundColor = '#5568d3';
-            }}
-            onMouseLeave={(e) => {
-              if (!loading) e.currentTarget.style.backgroundColor = '#667eea';
-            }}
-          >
-            {loading ? 'Creating Account...' : 'Sign Up'}
-          </button>
-        </form>
-
-        <div style={{
-          display: 'flex',
-          alignItems: 'center',
-          margin: '25px 0',
-          gap: '10px'
-        }}>
-          <div style={{ flex: 1, height: '1px', backgroundColor: '#ddd' }} />
-          <span style={{ color: '#666', fontSize: '0.9rem' }}>OR</span>
-          <div style={{ flex: 1, height: '1px', backgroundColor: '#ddd' }} />
-        </div>
-
-        <GoogleSignInButton />
-
-        <div style={{
-          textAlign: 'center',
-          color: '#666',
-          marginTop: '25px'
-        }}>
-          Already have an account?{' '}
-          <Link
-            to="/signin"
-            style={{
-              color: '#667eea',
-              textDecoration: 'none',
-              fontWeight: '600'
-            }}
-          >
-            Sign In
-          </Link>
         </div>
       </div>
     </div>

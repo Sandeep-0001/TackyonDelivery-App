@@ -52,6 +52,22 @@ const RecentOrders: React.FC<RecentOrdersProps> = ({
     }
   }, [propOrders]);
 
+  const statusBadgeClass = (status: string) => {
+    const s = (status || '').toLowerCase();
+    if (s === 'pending') return 'badge badge-warning';
+    if (s === 'in_progress' || s === 'processing') return 'badge badge-info';
+    if (s === 'delivered' || s === 'completed') return 'badge badge-success';
+    if (s === 'cancelled') return 'badge badge-danger';
+    if (s === 'shipped') return 'badge border-indigo-200 bg-indigo-50 text-indigo-700';
+    return 'badge border-slate-200 bg-slate-50 text-slate-700';
+  };
+
+  const statusLabel = (status: string) => {
+    const s = (status || '').toLowerCase();
+    if (s === 'in_progress') return 'In progress';
+    return s.charAt(0).toUpperCase() + s.slice(1);
+  };
+
   const handleStatusChange = async (orderId: string, newStatus: string) => {
     try {
       const updatedOrderData = { status: newStatus };
@@ -98,228 +114,76 @@ const RecentOrders: React.FC<RecentOrdersProps> = ({
   };
 
   return (
-    <div style={{ 
-      width: '100%', 
-      padding: '30px', 
-      boxSizing: 'border-box',
-      background: 'linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)',
-      borderRadius: '15px',
-      boxShadow: '0 8px 32px rgba(0,0,0,0.1)',
-      margin: '20px 0'
-    }}>
-      {/* Header */}
-      <div style={{ textAlign: 'center', marginBottom: '30px' }}>
-        <h2 style={{ 
-          fontSize: '2.2rem', 
-          color: '#2c3e50', 
-          marginBottom: '10px',
-          fontWeight: '700',
-          textShadow: '2px 2px 4px rgba(0,0,0,0.1)'
-        }}>
-          🕒 Recent Orders
-        </h2>
-        <p style={{ 
-          color: '#5a6c7d', 
-          fontSize: '1.1rem', 
-          maxWidth: '600px', 
-          margin: '0 auto',
-          lineHeight: '1.6'
-        }}>
-          A quick glance at your latest customer orders
-        </p>
-      </div>
-
-      {/* Loading State */}
-      {loading && (
-        <div style={{ textAlign: 'center', padding: '20px', color: '#667eea' }}>
-          Loading recent orders...
-        </div>
-      )}
-
-      {/* Error Message */}
-      {error && (
-        <div style={{ 
-          color: '#d63031', 
-          backgroundColor: '#ffeaa7', 
-          padding: '20px', 
-          borderRadius: '12px',
-          marginBottom: '25px',
-          border: '2px solid #fdcb6e',
-          boxShadow: '0 4px 12px rgba(214, 48, 49, 0.1)',
-          display: 'flex',
-          alignItems: 'center',
-          gap: '10px'
-        }}>
-          <span style={{ fontSize: '20px' }}>⚠️</span>
+    <div className="card">
+      <div className="card-body">
+        <div className="flex items-start justify-between gap-4">
           <div>
-            <strong style={{ fontSize: '16px' }}>Error:</strong> {error}
+            <h2 className="text-lg font-semibold text-slate-900">Recent orders</h2>
+            <p className="mt-1 text-sm text-slate-600">Quick view of the latest customer orders.</p>
           </div>
+          <div className="badge border-slate-200 bg-slate-50 text-slate-700">Last 5</div>
         </div>
-      )}
 
-      {/* Orders List */}
-      {!loading && !error && orders.length === 0 ? (
-        <div style={{ 
-          textAlign: 'center', 
-          padding: '40px 20px',
-          backgroundColor: 'rgba(255, 255, 255, 0.7)',
-          borderRadius: '15px',
-          border: '2px dashed #bdc3c7'
-        }}>
-          <div style={{ fontSize: '48px', marginBottom: '20px' }}>✨</div>
-          <p style={{ 
-            color: '#5a6c7d', 
-            fontSize: '1.2rem',
-            fontWeight: '500',
-            margin: '0'
-          }}>
-            No recent orders found. Add some new orders!
-          </p>
-        </div>
-      ) : (
-        <div style={{
-          border: 'none',
-          borderRadius: '15px',
-          overflow: 'hidden',
-          boxShadow: '0 8px 32px rgba(0,0,0,0.1)',
-          backgroundColor: 'white',
-          maxHeight: '400px', // Set a max height for scrolling
-          overflowY: 'auto' // Enable vertical scrolling
-        }}>
-          {orders.map((order, index) => (
-            <div 
-              key={order._id} 
-              style={{
-                padding: '20px',
-                borderBottom: index < orders.length - 1 ? '1px solid #f1f2f6' : 'none',
-                backgroundColor: index % 2 === 0 ? '#f8f9fa' : 'white',
-                transition: 'all 0.3s ease',
-                position: 'relative'
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.backgroundColor = '#e3f2fd';
-                e.currentTarget.style.transform = 'translateX(5px)';
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.backgroundColor = index % 2 === 0 ? '#f8f9fa' : 'white';
-                e.currentTarget.style.transform = 'translateX(0)';
-              }}
-            >
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
-                  <div style={{
-                    backgroundColor: '#667eea',
-                    color: 'white',
-                    width: '30px',
-                    height: '30px',
-                    borderRadius: '50%',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    fontSize: '14px',
-                    fontWeight: '600'
-                  }}>
-                    {index + 1}
-                  </div>
-                  <div>
-                    <strong style={{ fontSize: '16px', color: '#2c3e50' }}>
-                      {order.customerName}
-                    </strong>
+        {loading && <div className="mt-4 text-sm text-slate-600">Loading recent orders…</div>}
+
+        {error && (
+          <div className="mt-4 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">
+            <span className="font-semibold">Error:</span> {error}
+          </div>
+        )}
+
+        {!loading && !error && orders.length === 0 ? (
+          <div className="mt-4 rounded-2xl border border-dashed border-slate-300 bg-slate-50 px-6 py-10 text-center">
+            <div className="text-sm font-semibold text-slate-900">No recent orders</div>
+            <div className="mt-1 text-sm text-slate-600">Add a new order to get started.</div>
+          </div>
+        ) : null}
+
+        {!loading && !error && orders.length > 0 ? (
+          <div className="mt-4 overflow-hidden rounded-2xl border border-slate-200 bg-white">
+            <div className="max-h-96 overflow-y-auto divide-y divide-slate-100">
+              {orders.map((order, index) => (
+                <div key={order._id} className="px-4 py-3 hover:bg-slate-50">
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="flex items-start gap-3 min-w-0">
+                      <div className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-brand-primary-600 text-xs font-semibold text-white">
+                        {index + 1}
+                      </div>
+                      <div className="min-w-0">
+                        <div className="truncate text-sm font-semibold text-slate-900">{order.customerName}</div>
+                        <div className="mt-0.5 text-sm text-slate-600 break-words">{order.deliveryAddress}</div>
+                        {order.latitude && order.longitude && (
+                          <div className="mt-1 text-xs text-slate-500">
+                            Coordinates: {order.latitude.toFixed(4)}, {order.longitude.toFixed(4)}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+
+                    <div className="flex flex-col items-end gap-2">
+                      <span className={statusBadgeClass(order.status)}>{statusLabel(order.status)}</span>
+                      <select
+                        value={order.status}
+                        onChange={(e) => handleStatusChange(order._id, e.target.value)}
+                        className="select w-44"
+                      >
+                        <option value="pending">Pending</option>
+                        <option value="in_progress">In progress</option>
+                        <option value="shipped">Shipped</option>
+                        <option value="delivered">Delivered</option>
+                        <option value="cancelled">Cancelled</option>
+                      </select>
+                      <button onClick={() => handleDelete(order._id)} className="btn btn-danger px-3 py-2">
+                        Delete
+                      </button>
+                    </div>
                   </div>
                 </div>
-                <select
-                  value={order.status}
-                  onChange={(e) => handleStatusChange(order._id, e.target.value)}
-                  style={{
-                    padding: '6px 12px',
-                    borderRadius: '15px',
-                    fontSize: '12px',
-                    fontWeight: '600',
-                    backgroundColor: order.status === 'pending' ? '#ffeaa7' : 
-                                   order.status === 'completed' ? '#d1f2eb' :
-                                   order.status === 'in_progress' ? '#e3f2fd' : 
-                                   order.status === 'delivered' ? '#d1f2eb' :
-                                   order.status === 'cancelled' ? '#f8d7da' : '#f8f9fa',
-                    color: order.status === 'pending' ? '#d63031' : 
-                           order.status === 'completed' ? '#00b894' :
-                           order.status === 'in_progress' ? '#1976d2' : 
-                           order.status === 'delivered' ? '#00b894' :
-                           order.status === 'cancelled' ? '#721c24' : '#6c757d',
-                    border: `1px solid ${order.status === 'pending' ? '#fdcb6e' : 
-                                        order.status === 'completed' ? '#00b894' :
-                                        order.status === 'in_progress' ? '#1976d2' : 
-                                        order.status === 'delivered' ? '#00b894' :
-                                        order.status === 'cancelled' ? '#f5c6cb' : '#dee2e6'}`,
-                    appearance: 'none',
-                    backgroundImage: 'url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%20viewBox%3D%220%200%20292.4%20292.4%22%3E%3Cpath%20fill%3D%22%23667eea%22%20d%3D%22M287%2C197.9L159.2%2C63.2c-4.9-5.1-13.1-5.1-18.1%2C0L5.4%2C197.9c-5.1%2C5.1-5.1%2C13.4%2C0%2C18.4l1.2%2C1.2c5.1%2C5.1%2C13.4%2C5.1%2C18.4%2C0L149.9%2C94.2l124.9%2C123.3c5.1%2C5.1%2C13.4%2C5.1%2C18.4%2C0l1.2-1.2C292.1%2C211.3%2C292.1%2C203%2C287%2C197.9z%22%2F%3E%3C%2Fsvg%3E")',
-                    backgroundRepeat: 'no-repeat',
-                    backgroundPosition: 'right 8px center',
-                    backgroundSize: '10px',
-                    cursor: 'pointer'
-                  }}
-                >
-                  <option value="pending">⏳ Pending</option>
-                  <option value="in_progress">🚚 In Progress</option>
-                  <option value="shipped">📦 Shipped</option>
-                  <option value="delivered">✅ Delivered</option>
-                  <option value="cancelled">❌ Cancelled</option>
-                </select>
-              </div>
-              <div style={{ 
-                color: '#5a6c7d', 
-                marginLeft: '45px',
-                fontSize: '14px',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '8px'
-              }}>
-                <span>📍</span>
-                <span>{order.deliveryAddress}</span>
-              </div>
-              {order.latitude && order.longitude && (
-                <div style={{ 
-                  color: '#95a5a6', 
-                  fontSize: '12px', 
-                  marginLeft: '45px',
-                  marginTop: '5px',
-                  fontFamily: 'monospace'
-                }}>
-                  📊 Coordinates: {order.latitude.toFixed(4)}, {order.longitude.toFixed(4)}
-                </div>
-              )}
-              <button 
-                onClick={() => handleDelete(order._id)}
-                style={{
-                  backgroundColor: '#dc3545',
-                  color: 'white',
-                  border: 'none',
-                  padding: '8px 15px',
-                  borderRadius: '5px',
-                  cursor: 'pointer',
-                  marginLeft: '45px',
-                  marginTop: '10px',
-                  fontSize: '14px',
-                  fontWeight: '600',
-                  boxShadow: '0 2px 8px rgba(220, 53, 69, 0.2)',
-                  transition: 'all 0.3s ease'
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.backgroundColor = '#c82333';
-                  e.currentTarget.style.boxShadow = '0 4px 12px rgba(220, 53, 69, 0.4)';
-                  e.currentTarget.style.transform = 'translateY(-1px)';
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.backgroundColor = '#dc3545';
-                  e.currentTarget.style.boxShadow = '0 2px 8px rgba(220, 53, 69, 0.2)';
-                  e.currentTarget.style.transform = 'translateY(0)';
-                }}
-              >
-                🗑️ Delete
-              </button>
+              ))}
             </div>
-          ))}
-        </div>
-      )}
+          </div>
+        ) : null}
+      </div>
     </div>
   );
 };

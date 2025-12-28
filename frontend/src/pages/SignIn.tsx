@@ -33,160 +33,71 @@ const SignIn: React.FC = () => {
   };
 
   return (
-    <div style={{
-      minHeight: '100vh',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-      padding: '20px'
-    }}>
-      <div style={{
-        backgroundColor: 'white',
-        borderRadius: '12px',
-        boxShadow: '0 10px 40px rgba(0, 0, 0, 0.2)',
-        padding: '40px',
-        width: '100%',
-        maxWidth: '450px'
-      }}>
-        <h1 style={{
-          textAlign: 'center',
-          color: '#333',
-          marginBottom: '10px',
-          fontSize: '2rem'
-        }}>
-          Welcome Back
-        </h1>
-        <p style={{
-          textAlign: 'center',
-          color: '#666',
-          marginBottom: '30px'
-        }}>
-          Sign in to your RouteOptimizer account
-        </p>
-
-        {error && (
-          <div style={{
-            backgroundColor: '#fee',
-            color: '#c33',
-            padding: '12px',
-            borderRadius: '6px',
-            marginBottom: '20px',
-            border: '1px solid #fcc'
-          }}>
-            {error}
-          </div>
-        )}
-
-        <form onSubmit={handleSubmit}>
-          <div style={{ marginBottom: '20px' }}>
-            <label style={{
-              display: 'block',
-              marginBottom: '8px',
-              color: '#333',
-              fontWeight: '500'
-            }}>
-              Email
-            </label>
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-              style={{
-                width: '100%',
-                padding: '12px',
-                border: '1px solid #ddd',
-                borderRadius: '6px',
-                fontSize: '1rem',
-                boxSizing: 'border-box'
-              }}
-              placeholder="Enter your email"
+    <div className="auth-bg">
+      <div className="auth-card">
+        <div className="auth-card-body">
+          <div className="text-center">
+            <img
+              src="/logo.png"
+              alt="Company logo"
+              className="mx-auto h-11 w-11 rounded-2xl bg-white object-contain shadow-sm"
             />
+            <h1 className="mt-4 text-2xl font-semibold tracking-tight text-slate-900">Welcome back</h1>
+            <p className="mt-2 text-sm text-slate-600">Sign in to your RouteOptimizer account</p>
           </div>
 
-          <div style={{ marginBottom: '25px' }}>
-            <label style={{
-              display: 'block',
-              marginBottom: '8px',
-              color: '#333',
-              fontWeight: '500'
-            }}>
-              Password
-            </label>
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-              style={{
-                width: '100%',
-                padding: '12px',
-                border: '1px solid #ddd',
-                borderRadius: '6px',
-                fontSize: '1rem',
-                boxSizing: 'border-box'
-              }}
-              placeholder="Enter your password"
-            />
+          {error && (
+            <div className="mt-6 rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-800">
+              {error}
+            </div>
+          )}
+
+          <form onSubmit={handleSubmit} className="mt-6 space-y-4">
+            <div>
+              <label className="label">Email</label>
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+                className="input"
+                placeholder="Enter your email"
+                autoComplete="email"
+              />
+            </div>
+
+            <div>
+              <label className="label">Password</label>
+              <input
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+                className="input"
+                placeholder="Enter your password"
+                autoComplete="current-password"
+              />
+            </div>
+
+            <button type="submit" disabled={loading} className="btn btn-primary w-full py-3">
+              {loading ? 'Signing in…' : 'Sign in'}
+            </button>
+          </form>
+
+          <div className="my-6 flex items-center gap-3">
+            <div className="h-px flex-1 bg-slate-200" />
+            <div className="text-xs font-medium text-slate-500">OR</div>
+            <div className="h-px flex-1 bg-slate-200" />
           </div>
 
-          <button
-            type="submit"
-            disabled={loading}
-            style={{
-              width: '100%',
-              padding: '14px',
-              backgroundColor: loading ? '#999' : '#667eea',
-              color: 'white',
-              border: 'none',
-              borderRadius: '6px',
-              fontSize: '1rem',
-              fontWeight: '600',
-              cursor: loading ? 'not-allowed' : 'pointer',
-              transition: 'background-color 0.3s',
-              marginBottom: '20px'
-            }}
-            onMouseEnter={(e) => {
-              if (!loading) e.currentTarget.style.backgroundColor = '#5568d3';
-            }}
-            onMouseLeave={(e) => {
-              if (!loading) e.currentTarget.style.backgroundColor = '#667eea';
-            }}
-          >
-            {loading ? 'Signing In...' : 'Sign In'}
-          </button>
-        </form>
+          <GoogleSignInButton />
 
-        <div style={{
-          display: 'flex',
-          alignItems: 'center',
-          margin: '25px 0',
-          gap: '10px'
-        }}>
-          <div style={{ flex: 1, height: '1px', backgroundColor: '#ddd' }} />
-          <span style={{ color: '#666', fontSize: '0.9rem' }}>OR</span>
-          <div style={{ flex: 1, height: '1px', backgroundColor: '#ddd' }} />
-        </div>
-
-        <GoogleSignInButton />
-
-        <div style={{
-          textAlign: 'center',
-          color: '#666',
-          marginTop: '25px'
-        }}>
-          Don't have an account?{' '}
-          <Link
-            to="/signup"
-            style={{
-              color: '#667eea',
-              textDecoration: 'none',
-              fontWeight: '600'
-            }}
-          >
-            Sign Up
-          </Link>
+          <div className="mt-6 text-center text-sm text-slate-600">
+            Don&apos;t have an account?{' '}
+            <Link to="/signup" className="font-semibold text-brand-primary-700 hover:text-brand-primary-800">
+              Sign up
+            </Link>
+          </div>
         </div>
       </div>
     </div>

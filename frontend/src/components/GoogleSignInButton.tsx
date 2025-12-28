@@ -10,31 +10,7 @@ const GoogleSignInButton: React.FC = () => {
   return (
     <button
       onClick={handleGoogleSignIn}
-      style={{
-        width: '100%',
-        padding: '14px',
-        backgroundColor: 'white',
-        color: '#444',
-        border: '1px solid #ddd',
-        borderRadius: '6px',
-        fontSize: '1rem',
-        fontWeight: '600',
-        cursor: 'pointer',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        gap: '12px',
-        transition: 'all 0.3s',
-        boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
-      }}
-      onMouseEnter={(e) => {
-        e.currentTarget.style.backgroundColor = '#f8f8f8';
-        e.currentTarget.style.boxShadow = '0 4px 8px rgba(0,0,0,0.15)';
-      }}
-      onMouseLeave={(e) => {
-        e.currentTarget.style.backgroundColor = 'white';
-        e.currentTarget.style.boxShadow = '0 2px 4px rgba(0,0,0,0.1)';
-      }}
+      className="btn btn-outline w-full py-3"
     >
       <svg width="20" height="20" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
         <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>

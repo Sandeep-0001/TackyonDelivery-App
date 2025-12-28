@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import RecentOrders from '../components/RecentOrders';
 import UserStatistics from '../components/UserStatistics';
 import Notifications from '../components/notifications';
-import { fetchOrders, deleteOrder, updateOrder } from '../services/api';
+import { fetchOrders, updateOrder } from '../services/api';
 
 interface Order {
   _id: string;
@@ -122,17 +122,10 @@ const Dashboard: React.FC = () => {
     showNotification('Failed to delete order.', 'error');
   };
 
-  const handleOrderDeleted = async (id: string) => {
-    try {
-      await deleteOrder(id);
-      setOrders(prevOrders => prevOrders.filter(order => order._id !== id));
-      setError(null);
-      showNotification('Order deleted successfully!', 'success');
-    } catch (err) {
-      console.error('Error deleting order:', err);
-      setError('Failed to delete order.');
-      showNotification('Failed to delete order.', 'error');
-    }
+  const handleOrderDeleted = (id: string) => {
+    setOrders((prevOrders) => prevOrders.filter((order) => order._id !== id));
+    setError(null);
+    showNotification('Order deleted successfully!', 'success');
   };
 
   useEffect(() => {
@@ -162,139 +155,58 @@ const Dashboard: React.FC = () => {
   }, [showNotificationHistory]);
 
   return (
-    <div className="container">
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-        <h1>Dashboard</h1>
-        <div style={{ display: 'flex', gap: '10px', alignItems: 'center', position: 'relative' }}>
-          <button
-            onClick={handleNotificationButtonClick}
-            style={{
-              backgroundColor: 'transparent',
-              color: '#fff',
-              border: 'none',
-              padding: '8px 12px',
-              borderRadius: '20px',
-              cursor: 'pointer',
-              fontSize: '0.9rem',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '8px',
-              transition: 'all 0.3s ease'
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.1)';
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.backgroundColor = 'transparent';
-            }}
-          >
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <div className="app-page">
+      <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+          <h1 className="page-title">Dashboard</h1>
+          <p className="page-lead">An overview of your recent activity and order stats.</p>
+        </div>
+
+        <div className="relative" data-notification-history>
+          <button onClick={handleNotificationButtonClick} className="btn btn-outline">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path d="M18 8C18 6.4087 17.3679 4.88258 16.2426 3.75736C15.1174 2.63214 13.5913 2 12 2C10.4087 2 8.88258 2.63214 7.75736 3.75736C6.63214 4.88258 6 6.4087 6 8C6 15 3 17 3 17H21C21 17 18 15 18 8Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
               <path d="M13.73 21C13.5542 21.3031 13.3019 21.5547 12.9982 21.7295C12.6946 21.9044 12.3504 21.9965 12 21.9965C11.6496 21.9965 11.3054 21.9044 11.0018 21.7295C10.6982 21.5547 10.4458 21.3031 10.27 21" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
             </svg>
-            {notifications.length} notification{notifications.length !== 1 ? 's' : ''}
+            <span>
+              {notifications.length} notification{notifications.length !== 1 ? 's' : ''}
+            </span>
           </button>
-          
-          {/* Notification History Modal */}
+
           {showNotificationHistory && (
-            <div 
-              data-notification-history
-              style={{
-                position: 'absolute',
-                top: '100%',
-                right: '0',
-                backgroundColor: '#fff',
-                border: '1px solid #ddd',
-                borderRadius: '8px',
-                boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
-                minWidth: '350px',
-                maxWidth: '500px',
-                maxHeight: '400px',
-                overflowY: 'auto',
-                zIndex: 1000,
-                marginTop: '8px'
-              }}>
-              <div style={{
-                padding: '16px',
-                borderBottom: '1px solid #eee',
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center'
-              }}>
-                <h3 style={{ margin: 0, color: '#333', fontSize: '16px' }}>Notification History</h3>
-                <div style={{ display: 'flex', gap: '8px' }}>
-                  <button
-                    onClick={clearNotificationHistory}
-                    style={{
-                      backgroundColor: '#dc3545',
-                      color: 'white',
-                      border: 'none',
-                      padding: '4px 8px',
-                      borderRadius: '4px',
-                      cursor: 'pointer',
-                      fontSize: '12px'
-                    }}
-                  >
-                    Clear All
+            <div className="absolute right-0 top-full mt-2 w-[22rem] max-w-[90vw] overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-xl ring-1 ring-black/5">
+              <div className="flex items-center justify-between gap-3 border-b border-slate-200 px-4 py-3">
+                <div className="text-sm font-semibold text-slate-900">Notification history</div>
+                <div className="flex items-center gap-2">
+                  <button onClick={clearNotificationHistory} className="btn btn-danger px-3 py-1.5 text-xs">
+                    Clear
                   </button>
-                  <button
-                    onClick={() => setShowNotificationHistory(false)}
-                    style={{
-                      backgroundColor: '#6c757d',
-                      color: 'white',
-                      border: 'none',
-                      padding: '4px 8px',
-                      borderRadius: '4px',
-                      cursor: 'pointer',
-                      fontSize: '12px'
-                    }}
-                  >
+                  <button onClick={() => setShowNotificationHistory(false)} className="btn btn-outline px-3 py-1.5 text-xs">
                     Close
                   </button>
                 </div>
               </div>
-              
-              <div style={{ maxHeight: '300px', overflowY: 'auto' }}>
+
+              <div className="max-h-80 overflow-y-auto">
                 {notificationHistory.length === 0 ? (
-                  <div style={{ padding: '20px', textAlign: 'center', color: '#666' }}>
-                    No notification history available
-                  </div>
+                  <div className="px-4 py-6 text-center text-sm text-slate-600">No notification history available</div>
                 ) : (
                   notificationHistory.map((notification) => (
-                    <div
-                      key={notification.id}
-                      style={{
-                        padding: '12px 16px',
-                        borderBottom: '1px solid #f0f0f0',
-                        display: 'flex',
-                        justifyContent: 'space-between',
-                        alignItems: 'flex-start'
-                      }}
-                    >
-                      <div style={{ flex: 1 }}>
-                        <div style={{
-                          fontSize: '14px',
-                          color: '#333',
-                          marginBottom: '4px'
-                        }}>
-                          {notification.message}
-                        </div>
-                        <div style={{
-                          fontSize: '12px',
-                          color: '#666'
-                        }}>
-                          {new Date(notification.timestamp).toLocaleString()}
-                        </div>
+                    <div key={notification.id} className="flex items-start justify-between gap-3 border-b border-slate-100 px-4 py-3 last:border-b-0">
+                      <div className="min-w-0">
+                        <div className="text-sm text-slate-900 break-words">{notification.message}</div>
+                        <div className="mt-0.5 text-xs text-slate-500">{new Date(notification.timestamp).toLocaleString()}</div>
                       </div>
-                      <div style={{
-                        width: '8px',
-                        height: '8px',
-                        borderRadius: '50%',
-                        backgroundColor: notification.type === 'success' ? '#28a745' : 
-                                       notification.type === 'error' ? '#dc3545' : '#17a2b8',
-                        marginLeft: '8px',
-                        marginTop: '4px'
-                      }} />
+                      <div
+                        className={
+                          'mt-1 h-2 w-2 shrink-0 rounded-full ' +
+                          (notification.type === 'success'
+                            ? 'bg-emerald-500'
+                            : notification.type === 'error'
+                              ? 'bg-rose-500'
+                              : 'bg-sky-500')
+                        }
+                      />
                     </div>
                   ))
                 )}
@@ -303,27 +215,20 @@ const Dashboard: React.FC = () => {
           )}
         </div>
       </div>
-      
-      <p style={{ textAlign: 'center', color: '#fff', marginBottom: '30px', fontSize: '1.2rem' }}>
-        Welcome to your dashboard. Here you can find an overview of your data and recent activity.
-      </p>
 
-      <div className="grid">
-        <div className="card">
-          <RecentOrders 
-            orders={orders} 
-            onOrderUpdated={handleOrderUpdated} 
-            onOrderDeleted={handleOrderDeleted}
-            onOrderUpdateError={handleOrderUpdateError}
-            onOrderDeleteError={handleOrderDeleteError}
-          />
-        </div>
-        <div className="card">
-          <UserStatistics orders={orders} />
-        </div>
+      {error && <div className="mb-4 rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-800">{error}</div>}
+
+      <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+        <RecentOrders
+          orders={orders}
+          onOrderUpdated={handleOrderUpdated}
+          onOrderDeleted={handleOrderDeleted}
+          onOrderUpdateError={handleOrderUpdateError}
+          onOrderDeleteError={handleOrderDeleteError}
+        />
+        <UserStatistics orders={orders} />
       </div>
-      
-      {/* Notification System */}
+
       <Notifications notifications={notifications} onDismiss={handleDismissNotification} />
     </div>
   );

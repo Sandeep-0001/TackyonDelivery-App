@@ -12,111 +12,105 @@ import GoogleCallback from './pages/GoogleCallback';
 const Navigation: React.FC = () => {
   const { isAuthenticated, user, logout } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
 
   const handleLogout = () => {
     logout();
     navigate('/');
   };
 
+  const isActive = (path: string) => location.pathname === path;
+
   return (
-    <nav style={{
-      padding: '1rem 2rem',
-      backgroundColor: '#667eea',
-      marginBottom: '0',
-      display: 'flex',
-      justifyContent: 'space-between',
-      alignItems: 'center',
-      boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
-    }}>
-      <div style={{ display: 'flex', gap: '1.5rem', alignItems: 'center' }}>
-        <Link to="/home" style={{
-          textDecoration: 'none',
-          color: 'white',
-          fontWeight: '600',
-          fontSize: '1.1rem',
-          transition: 'opacity 0.3s'
-        }}
-        onMouseEnter={(e) => e.currentTarget.style.opacity = '0.8'}
-        onMouseLeave={(e) => e.currentTarget.style.opacity = '1'}
-        >
-          Home
-        </Link>
-        <Link to="/dashboard" style={{
-          textDecoration: 'none',
-          color: 'white',
-          fontWeight: '600',
-          fontSize: '1.1rem',
-          transition: 'opacity 0.3s'
-        }}
-        onMouseEnter={(e) => e.currentTarget.style.opacity = '0.8'}
-        onMouseLeave={(e) => e.currentTarget.style.opacity = '1'}
-        >
-          Dashboard
-        </Link>
+    <header className="sticky top-0 z-50">
+      <div className="bg-white/80 backdrop-blur border-b border-slate-200">
+        <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
+          <div className="h-16 flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <img
+                src="/logo.png"
+                alt="Company logo"
+                className="h-9 w-9 rounded-xl bg-white object-contain shadow-sm"
+              />
+              <div className="leading-tight">
+                <div className="text-sm font-semibold text-slate-900">Tackyon  Delivery</div>
+                <div className="text-xs text-slate-500">Deliver smarter</div>
+              </div>
+              <nav className="ml-6 hidden sm:flex items-center gap-2">
+                <Link
+                  to="/home"
+                  className={
+                    (isActive('/home')
+                      ? 'bg-slate-900 text-white'
+                      : 'text-slate-700 hover:bg-slate-100') +
+                    ' rounded-lg px-3 py-2 text-sm font-medium transition-colors'
+                  }
+                >
+                  Home
+                </Link>
+                <Link
+                  to="/dashboard"
+                  className={
+                    (isActive('/dashboard')
+                      ? 'bg-slate-900 text-white'
+                      : 'text-slate-700 hover:bg-slate-100') +
+                    ' rounded-lg px-3 py-2 text-sm font-medium transition-colors'
+                  }
+                >
+                  Dashboard
+                </Link>
+              </nav>
+            </div>
+
+            <div className="flex items-center gap-3">
+              {isAuthenticated ? (
+                <>
+                  <div className="hidden sm:block text-sm text-slate-600">
+                    <span className="text-slate-500">Signed in as</span>{' '}
+                    <span className="font-medium text-slate-900">{user?.name}</span>
+                  </div>
+                  <button onClick={handleLogout} className="btn btn-outline">
+                    Logout
+                  </button>
+                </>
+              ) : (
+                <>
+                  <Link to="/signin" className="btn btn-ghost">
+                    Sign In
+                  </Link>
+                  <Link to="/signup" className="btn btn-primary">
+                    Sign Up
+                  </Link>
+                </>
+              )}
+            </div>
+          </div>
+        </div>
       </div>
-      
-      <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
-        {isAuthenticated ? (
-          <>
-            <span style={{ color: 'white', fontSize: '0.95rem' }}>
-              Welcome, {user?.name}
-            </span>
-            <button
-              onClick={handleLogout}
-              style={{
-                padding: '8px 20px',
-                backgroundColor: 'rgba(255, 255, 255, 0.2)',
-                color: 'white',
-                border: '1px solid white',
-                borderRadius: '6px',
-                cursor: 'pointer',
-                fontWeight: '600',
-                fontSize: '0.95rem',
-                transition: 'all 0.3s'
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.3)';
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.2)';
-              }}
-            >
-              Logout
-            </button>
-          </>
-        ) : (
-          <>
-            <Link to="/signin" style={{
-              textDecoration: 'none',
-              color: 'white',
-              fontWeight: '600',
-              fontSize: '0.95rem'
-            }}>
-              Sign In
-            </Link>
-            <Link to="/signup" style={{
-              padding: '8px 20px',
-              backgroundColor: 'white',
-              color: '#667eea',
-              textDecoration: 'none',
-              borderRadius: '6px',
-              fontWeight: '600',
-              fontSize: '0.95rem',
-              transition: 'all 0.3s'
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.backgroundColor = '#f0f0f0';
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.backgroundColor = 'white';
-            }}
-            >
-              Sign Up
-            </Link>
-          </>
-        )}
+
+      <div className="sm:hidden bg-white/80 backdrop-blur border-b border-slate-200">
+        <div className="mx-auto max-w-6xl px-4 py-2 flex items-center gap-2">
+          <Link
+            to="/home"
+            className={
+              (isActive('/home') ? 'bg-slate-900 text-white' : 'text-slate-700 hover:bg-slate-100') +
+              ' rounded-lg px-3 py-2 text-sm font-medium transition-colors'
+            }
+          >
+            Home
+          </Link>
+          <Link
+            to="/dashboard"
+            className={
+              (isActive('/dashboard') ? 'bg-slate-900 text-white' : 'text-slate-700 hover:bg-slate-100') +
+              ' rounded-lg px-3 py-2 text-sm font-medium transition-colors'
+            }
+          >
+            Dashboard
+          </Link>
+        </div>
       </div>
-    </nav>
+    </header>
   );
 };
 

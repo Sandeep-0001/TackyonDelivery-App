@@ -70,289 +70,100 @@ const SearchOrders: React.FC<SearchOrdersProps> = ({ showNotification }) => {
     }
   };
 
+  const statusBadgeClass = (status?: string) => {
+    const s = (status || '').toLowerCase();
+    if (s === 'pending') return 'badge badge-warning';
+    if (s === 'in_progress' || s === 'processing') return 'badge badge-info';
+    if (s === 'delivered' || s === 'completed') return 'badge badge-success';
+    if (s === 'cancelled') return 'badge badge-danger';
+    return 'badge border-slate-200 bg-slate-50 text-slate-700';
+  };
+
+  const statusLabel = (status?: string) => {
+    if (!status) return '';
+    const s = status.toLowerCase();
+    if (s === 'in_progress') return 'In progress';
+    return s.charAt(0).toUpperCase() + s.slice(1);
+  };
+
   return (
-    <div style={{ 
-      width: '100%', 
-      padding: '30px', 
-      boxSizing: 'border-box',
-      background: 'linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)',
-      borderRadius: '15px',
-      boxShadow: '0 8px 32px rgba(0,0,0,0.1)',
-      margin: '20px 0'
-    }}>
-      {/* Header */}
-      <div style={{ textAlign: 'center', marginBottom: '30px' }}>
-        <h2 style={{ 
-          fontSize: '2.2rem', 
-          color: '#2c3e50', 
-          marginBottom: '10px',
-          fontWeight: '700',
-          textShadow: '2px 2px 4px rgba(0,0,0,0.1)'
-        }}>
-          🔍 Search Orders
-        </h2>
-        <p style={{ 
-          color: '#5a6c7d', 
-          fontSize: '1.1rem', 
-          maxWidth: '600px', 
-          margin: '0 auto',
-          lineHeight: '1.6'
-        }}>
-          Find orders by customer name or delivery address
-        </p>
-      </div>
-
-      {/* Search Input */}
-      <div style={{ 
-        display: 'flex', 
-        gap: '15px', 
-        marginBottom: '30px', 
-        flexWrap: 'wrap',
-        justifyContent: 'center'
-      }}>
-      <input
-        type="text"
-        value={query}
-        onChange={(e) => setQuery(e.target.value)}
-          placeholder="Search by customer name or address..."
-        onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
-          style={{
-            flex: '1',
-            minWidth: '300px',
-            padding: '15px 20px',
-            fontSize: '16px',
-            border: '2px solid #e1e5e9',
-            borderRadius: '25px',
-            outline: 'none',
-            transition: 'all 0.3s ease',
-            boxShadow: '0 4px 15px rgba(0,0,0,0.1)'
-          }}
-          onFocus={(e) => {
-            e.target.style.borderColor = '#667eea';
-            e.target.style.boxShadow = '0 4px 20px rgba(102, 126, 234, 0.2)';
-          }}
-          onBlur={(e) => {
-            e.target.style.borderColor = '#e1e5e9';
-            e.target.style.boxShadow = '0 4px 15px rgba(0,0,0,0.1)';
-          }}
-        />
-        <button 
-          onClick={handleSearch}
-          disabled={loading}
-          style={{
-            padding: '15px 30px',
-            fontSize: '16px',
-            fontWeight: '600',
-            background: loading 
-              ? 'linear-gradient(45deg, #bdc3c7, #95a5a6)' 
-              : 'linear-gradient(45deg, #667eea, #764ba2)',
-            color: 'white',
-            border: 'none',
-            borderRadius: '25px',
-            cursor: loading ? 'not-allowed' : 'pointer',
-            boxShadow: '0 4px 15px rgba(0,0,0,0.2)',
-            transition: 'all 0.3s ease',
-            minWidth: '120px'
-          }}
-        >
-          {loading ? '⏳ Searching...' : '🔍 Search'}
-        </button>
-        {hasSearched && (
-          <button 
-            onClick={handleClear}
-            style={{
-              padding: '15px 30px',
-              fontSize: '16px',
-              fontWeight: '600',
-              background: 'linear-gradient(45deg, #ff6b6b, #ee5a52)',
-              color: 'white',
-              border: 'none',
-              borderRadius: '25px',
-              cursor: 'pointer',
-              boxShadow: '0 4px 15px rgba(0,0,0,0.2)',
-              transition: 'all 0.3s ease',
-              minWidth: '120px'
-            }}
-          >
-            🗑️ Clear
-          </button>
-        )}
-      </div>
-
-      {/* Error Message */}
-      {error && (
-        <div style={{ 
-          color: '#d63031', 
-          backgroundColor: '#ffeaa7', 
-          padding: '20px', 
-          borderRadius: '12px',
-          marginBottom: '25px',
-          border: '2px solid #fdcb6e',
-          boxShadow: '0 4px 12px rgba(214, 48, 49, 0.1)',
-          display: 'flex',
-          alignItems: 'center',
-          gap: '10px'
-        }}>
-          <span style={{ fontSize: '20px' }}>⚠️</span>
+    <div className="card">
+      <div className="card-body">
+        <div className="flex items-start justify-between gap-4">
           <div>
-            <strong style={{ fontSize: '16px' }}>Error:</strong> {error}
+            <h2 className="text-lg font-semibold text-slate-900">Search orders</h2>
+            <p className="mt-1 text-sm text-slate-600">Find orders by customer name or delivery address.</p>
+          </div>
+          {hasSearched && <div className="badge badge-info">{results.length} result{results.length !== 1 ? 's' : ''}</div>}
+        </div>
+
+        <div className="mt-5 flex flex-col gap-2 sm:flex-row">
+          <input
+            type="text"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder="Search by customer name or address…"
+            onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
+            className="input"
+          />
+          <div className="flex gap-2">
+            <button onClick={handleSearch} disabled={loading} className="btn btn-primary w-full sm:w-auto">
+              {loading ? 'Searching…' : 'Search'}
+            </button>
+            {hasSearched && (
+              <button onClick={handleClear} className="btn btn-outline w-full sm:w-auto">
+                Clear
+              </button>
+            )}
           </div>
         </div>
-      )}
 
-      {/* Results */}
-      {hasSearched && !loading && (
-        <div>
-          {results.length === 0 ? (
-            <div style={{ 
-              textAlign: 'center', 
-              padding: '40px 20px',
-              backgroundColor: 'rgba(255, 255, 255, 0.7)',
-              borderRadius: '15px',
-              border: '2px dashed #bdc3c7'
-            }}>
-              <div style={{ fontSize: '48px', marginBottom: '20px' }}>🔍</div>
-              <p style={{ 
-                color: '#5a6c7d', 
-                fontSize: '1.2rem',
-                fontWeight: '500',
-                margin: '0'
-              }}>
-                No results found for "{query}". Try a different search term.
-              </p>
-            </div>
-          ) : (
-            <div>
-              <div style={{ 
-                display: 'flex', 
-                alignItems: 'center', 
-                gap: '15px', 
-                marginBottom: '25px',
-                justifyContent: 'center'
-              }}>
-                <h3 style={{ 
-                  fontSize: '1.8rem', 
-                  color: '#2c3e50', 
-                  margin: '0',
-                  fontWeight: '600'
-                }}>
-                  📋 Search Results
-                </h3>
-                <span style={{
-                  backgroundColor: '#667eea',
-                  color: 'white',
-                  padding: '8px 16px',
-                  borderRadius: '20px',
-                  fontSize: '14px',
-                  fontWeight: '600'
-                }}>
-                  {results.length} found
-                </span>
+        {error && (
+          <div className="mt-4 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">
+            <span className="font-semibold">Error:</span> {error}
+          </div>
+        )}
+
+        {hasSearched && !loading && (
+          <div className="mt-5">
+            {results.length === 0 ? (
+              <div className="rounded-2xl border border-dashed border-slate-300 bg-slate-50 px-6 py-10 text-center">
+                <div className="text-sm font-semibold text-slate-900">No results</div>
+                <div className="mt-1 text-sm text-slate-600">No results found for “{query}”. Try a different term.</div>
               </div>
-              <div style={{
-                border: 'none',
-                borderRadius: '15px',
-                overflow: 'hidden',
-                boxShadow: '0 8px 32px rgba(0,0,0,0.1)',
-                backgroundColor: 'white',
-                maxHeight: '500px', // Set a max height for scrolling
-                overflowY: 'auto' // Enable vertical scrolling
-              }}>
-                {results.map((result, index) => (
-                  <div
-                    key={result._id}
-                    style={{
-                      padding: '20px',
-                      borderBottom: index < results.length - 1 ? '1px solid #f1f2f6' : 'none',
-                      backgroundColor: index % 2 === 0 ? '#f8f9fa' : 'white',
-                      transition: 'all 0.3s ease',
-                      position: 'relative'
-                    }}
-                    onMouseEnter={(e) => {
-                      e.currentTarget.style.backgroundColor = '#e3f2fd';
-                      e.currentTarget.style.transform = 'translateX(5px)';
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.backgroundColor = index % 2 === 0 ? '#f8f9fa' : 'white';
-                      e.currentTarget.style.transform = 'translateX(0)';
-                    }}
-                  >
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
-                        <div style={{
-                          backgroundColor: '#667eea',
-                          color: 'white',
-                          width: '30px',
-                          height: '30px',
-                          borderRadius: '50%',
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          fontSize: '14px',
-                          fontWeight: '600'
-                        }}>
-                          {index + 1}
+            ) : (
+              <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white">
+                <div className="max-h-[32rem] overflow-y-auto divide-y divide-slate-100">
+                  {results.map((result, index) => (
+                    <div key={result._id} className="px-4 py-3 hover:bg-slate-50">
+                      <div className="flex items-start justify-between gap-3">
+                        <div className="flex items-start gap-3 min-w-0">
+                          <div className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-brand-primary-600 text-xs font-semibold text-white">
+                            {index + 1}
+                          </div>
+                          <div className="min-w-0">
+                            <div className="truncate text-sm font-semibold text-slate-900">{result._source.customerName}</div>
+                            <div className="mt-0.5 text-sm text-slate-600 break-words">{result._source.deliveryAddress}</div>
+                            {result._source.latitude && result._source.longitude && (
+                              <div className="mt-1 text-xs text-slate-500">
+                                Coordinates: {result._source.latitude.toFixed(4)}, {result._source.longitude.toFixed(4)}
+                              </div>
+                            )}
+                          </div>
                         </div>
-                        <div>
-                          <strong style={{ fontSize: '16px', color: '#2c3e50' }}>
-                            {result._source.customerName}
-                          </strong>
-                        </div>
+
+                        {result._source.status && (
+                          <span className={statusBadgeClass(result._source.status)}>{statusLabel(result._source.status)}</span>
+                        )}
                       </div>
-                      {result._source.status && (
-                        <span style={{
-                          padding: '6px 12px',
-                          borderRadius: '15px',
-                          fontSize: '12px',
-                          fontWeight: '600',
-                          backgroundColor: result._source.status === 'pending' ? '#ffeaa7' : 
-                                         result._source.status === 'completed' ? '#d1f2eb' :
-                                         result._source.status === 'in_progress' ? '#e3f2fd' : '#f8f9fa',
-                          color: result._source.status === 'pending' ? '#d63031' : 
-                                 result._source.status === 'completed' ? '#00b894' :
-                                 result._source.status === 'in_progress' ? '#1976d2' : '#6c757d',
-                          border: `1px solid ${result._source.status === 'pending' ? '#fdcb6e' : 
-                                              result._source.status === 'completed' ? '#00b894' :
-                                              result._source.status === 'in_progress' ? '#1976d2' : '#dee2e6'}`
-                        }}>
-                          {result._source.status === 'pending' ? '⏳ Pending' : 
-                           result._source.status === 'completed' ? '✅ Completed' :
-                           result._source.status === 'in_progress' ? '🚚 In Progress' :
-                           result._source.status === 'delivered' ? '📦 Delivered' :
-                           result._source.status === 'cancelled' ? '❌ Cancelled' :
-                           `📋 ${result._source.status.charAt(0).toUpperCase() + result._source.status.slice(1)}`}
-                        </span>
-                      )}
                     </div>
-                    <div style={{ 
-                      color: '#5a6c7d', 
-                      marginLeft: '45px',
-                      fontSize: '14px',
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '8px'
-                    }}>
-                      <span>📍</span>
-                      <span>{result._source.deliveryAddress}</span>
-                    </div>
-                    {result._source.latitude && result._source.longitude && (
-                      <div style={{ 
-                        color: '#95a5a6', 
-                        fontSize: '12px', 
-                        marginLeft: '45px',
-                        marginTop: '5px',
-                        fontFamily: 'monospace'
-                      }}>
-                        📊 Coordinates: {result._source.latitude.toFixed(4)}, {result._source.longitude.toFixed(4)}
-                      </div>
-                    )}
-                  </div>
-                ))}
+                  ))}
+                </div>
               </div>
-            </div>
-          )}
-        </div>
-      )}
+            )}
+          </div>
+        )}
+      </div>
     </div>
   );
 };
